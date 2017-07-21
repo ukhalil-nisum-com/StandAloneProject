@@ -75,17 +75,18 @@ class KeyBoardViewController: UIViewController {
      * Move to next input field
      */
     @IBAction func nextField(){
-        
+        if type == 1 {
         NotificationCenter.default.post(name: notificationName, object: self, userInfo: ["tag": 1])
+        }
     }
     
     /*
      * Move to previous input field
      */
     @IBAction func previousField(){
-        
+        if type == 1 {
         NotificationCenter.default.post(name: notificationName, object: self, userInfo: ["tag": -1])
-
+        }
     }
     
     @IBAction func digitsPressed(_ sender: UIButton){
