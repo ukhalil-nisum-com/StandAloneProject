@@ -7,26 +7,6 @@
 //
 
 import UIKit
-extension Double{
-    var C:Double {return self/100}
-    var FIVE_C : Double {return self * 5/100}
-    var TEN_C : Double {return self * 10/100}
-    var TWETYFIVE_C:Double{return self * 25/100}
-    var FIFTY_C:Double{return self * 50/100}
-    var HUNDRED_C:Double{return self}
-    var PENNIES:Double{return self *  50/100}
-    var NICKEL : Double{ return self * 2}
-    var DIMES : Double{return self * 5}
-    var QUARTERS : Double{return self * 10}
-    var Dollar1:Double{return self}
-    var Dollar2:Double{return self * 2}
-    var Dollar5:Double{return self * 5}
-    var Dollar10:Double{return self * 10}
-    var Dollar20:Double{return self * 20}
-    var Dollar50:Double{return self * 50}
-    var Dollar100:Double{return self * 100}
-    var ACTUAL_AMOUNT:Double{return self/100}
-}
 
 class DenominationViewController: UIViewController {
     
@@ -63,7 +43,8 @@ class DenominationViewController: UIViewController {
     let calculateAmountNotiName = Notification.Name("CalculateAmount")
 
     var digiTag = 1
-    
+    var totalCount: Double = 0.00
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,26 +64,21 @@ class DenominationViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
    
+    //Textfields delegate methods
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-
         tempLastOpenTF = textField
         tempLastOpenTF.setBottomBorder()
-
         return true
     }
    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         textField.resignFirstResponder()
-
         tempLastOpenTF = textField
         NotificationCenter.default.post(name: showKeyBoardNotiName, object: self, userInfo: ["type": 1])
-
-
     }
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        
-        calculateTotalAmount()
-    }
+    
+
+    //Notification handler
     func updateField(not: Notification) {
         // NotificationInfo is the payload send by sender of notification
         if let notificationInfo = not.userInfo {
@@ -118,11 +94,13 @@ class DenominationViewController: UIViewController {
         }
     }
     
+    //Setting Border color
     func seTextFieldsBorder(){
         for item in textFields{
             item.clearBottomBorder()
         }
     }
+    
     func checkEmptyTextFields(){
         for tag in 1..<17 {
             let tf = tempLastOpenTF.superview!.viewWithTag(tag)
@@ -137,7 +115,7 @@ class DenominationViewController: UIViewController {
         }
     }
     
-    
+    //Setting active label color
     func highlightLables(tag: Int){
         for i: UIView in view.subviews {
 
@@ -178,8 +156,11 @@ class DenominationViewController: UIViewController {
         }
     }
     
+    //Calculating total amount
     func calculateTotalAmount(){
-        var totalCount: Double = 0.00
+//        var totalCount: Double = 0.00
+         totalCount = 0.00
+
                 for i: UIView in view.subviews {
                     if (i is UITextField) {
                         let textField: UITextField? = (i as? UITextField)
@@ -250,9 +231,9 @@ class DenominationViewController: UIViewController {
                 }
             NotificationCenter.default.post(name: calculateAmountNotiName, object: self, userInfo: ["total": totalCount])
 
-}
+    }
 
-    
+    //Next/previous button functionality
     func focusTextField(nextPrev:Int){
         tempLastOpenTF.setBottomBorder()
         var nextResponder: UIResponder!
@@ -263,120 +244,129 @@ class DenominationViewController: UIViewController {
         if tag <= 17 {
             nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
             tempLastOpenTF.setBottomBorder()
+            tempLastOpenTF.clearButtonMode = .whileEditing
             highlightLables(tag: tag)
             nextResponder.becomeFirstResponder()
             activeLabel(tag: tag)
         }
        }
     
+    //Updating textfield values
     func valueTextField(digit: Int){
         
-        var nextResponder: UIResponder!
-        let tag = digiTag
+        for i: UIView in view.subviews {
+            if (i is UITextField) {
+                let textField: UITextField? = (i as? UITextField)
+                if (digiTag == textField?.tag){
+                    textField?.clearButtonMode = .whileEditing
+
+                    if ((textField!.text?.characters.count)! > 0){
+                        let value : String = ("\(String(describing: textField!.text!))\(digit)")
+                        
+                        if digit == -1 {
+                            textField?.text = textField?.text?.substring(to: (textField?.text?.index(before: (textField?.text?.endIndex)!))!)
+                            
+                        }
+                        else if digit == -2 {
+                          textField?.text = String((textField?.text)! + ("00"))
+                        }
+                            
+                        else {
+                            tempLastOpenTF.text = value
+                        }
+                    }
+                    else{
+                        if digit == -1 {
+
+                        }
+                        else {
+                            textField?.text = String(digit)
+
+                        }
+                    }
+                }
+            }
+        }
         
-        if(tag == 1){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-            nextResponder.becomeFirstResponder()
+        calculateTotalAmount()
+    }
+    
+    //For Unit Testing
+    func calculateTotalAmountTest(tag: Int, textField: UITextField) -> Double{
+        
+        if(tag == 0){
+            totalCount += Double((textField.text!))!.C
+        }
+        else if(tag == 1){
+            totalCount += Double((textField.text!))!.FIVE_C
         }
         else if(tag == 2){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.TEN_C
         }
         else if(tag == 3){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.TWETYFIVE_C
         }
         else if(tag == 4){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.FIFTY_C
         }
         else if(tag == 5){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.HUNDRED_C
         }
         else if(tag == 6){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.PENNIES
         }
         else if(tag == 7){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.NICKEL
         }
         else if(tag == 8){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.DIMES
         }
         else if(tag == 9){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.QUARTERS
         }
         else if(tag == 10){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar1
         }
         else if(tag == 11){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar2
         }
         else if(tag == 12){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar5
         }
         else if(tag == 13){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar10
         }
         else if(tag == 14){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar20
         }
         else if(tag == 15){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar50
         }
         else if(tag == 16){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-
-            nextResponder.becomeFirstResponder()
+            totalCount += Double((textField.text!))!.Dollar100
         }
-        else if(tag == 17){
-            nextResponder = tempLastOpenTF.superview!.viewWithTag(tag)!
-            tempLastOpenTF.text = String(digit)
-            nextResponder.becomeFirstResponder()
-        }
-        else
-        {
-        }
-        
-        
+        return totalCount
     }
 
+}
+
+extension Double{
+    var C:Double {return self/100}
+    var FIVE_C : Double {return self * 5/100}
+    var TEN_C : Double {return self * 10/100}
+    var TWETYFIVE_C:Double{return self * 25/100}
+    var FIFTY_C:Double{return self * 50/100}
+    var HUNDRED_C:Double{return self}
+    var PENNIES:Double{return self *  50/100}
+    var NICKEL : Double{ return self * 2}
+    var DIMES : Double{return self * 5}
+    var QUARTERS : Double{return self * 10}
+    var Dollar1:Double{return self}
+    var Dollar2:Double{return self * 2}
+    var Dollar5:Double{return self * 5}
+    var Dollar10:Double{return self * 10}
+    var Dollar20:Double{return self * 20}
+    var Dollar50:Double{return self * 50}
+    var Dollar100:Double{return self * 100}
+    var ACTUAL_AMOUNT:Double{return self/100}
 }

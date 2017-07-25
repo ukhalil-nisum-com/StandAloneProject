@@ -52,7 +52,7 @@ class KeyBoardViewController: UIViewController {
     }
     
 
-    
+    //show keyboard
     func makeKeyboardVisible(not:Notification){
         self.view.alpha = 1
         if let notificationInfo = not.userInfo {
@@ -63,6 +63,7 @@ class KeyBoardViewController: UIViewController {
         }
     }
     
+    //Hide keyboard
     func makeKeyboardHide(){
         self.view.alpha = 0
     }
@@ -71,24 +72,22 @@ class KeyBoardViewController: UIViewController {
         makeKeyboardHide()
     }
  
-    /*
-     * Move to next input field
-     */
+    //Move to next input field
     @IBAction func nextField(){
         if type == 1 {
         NotificationCenter.default.post(name: notificationName, object: self, userInfo: ["tag": 1])
         }
     }
     
-    /*
-     * Move to previous input field
-     */
+    
+    //Move to previous input field
     @IBAction func previousField(){
         if type == 1 {
         NotificationCenter.default.post(name: notificationName, object: self, userInfo: ["tag": -1])
         }
     }
     
+    //Button pressed
     @IBAction func digitsPressed(_ sender: UIButton){
         
         var digitValue = 0
@@ -97,10 +96,10 @@ class KeyBoardViewController: UIViewController {
             digitValue = 0
         }
         else if sender.tag == 501 {
-            digitValue = 00
+            digitValue = -2
         }
         else if sender.tag == 502 {
-             digitValue = 0
+             digitValue = -1
         }
         
         if type == 0 {
